@@ -5,7 +5,7 @@ import 'package:geolocator/geolocator.dart';
 // Trackers
 import 'trackers/interaction/tap_tracker.dart';
 import 'trackers/interaction/swipe_tracker.dart';
-import 'trackers/interaction/input_tracker.dart'; // ✅ Tracks amount, FD, loan
+import 'trackers/interaction/input_tracker.dart';
 import 'trackers/location_tracker.dart';
 import 'trackers/navigation_logger.dart';
 
@@ -31,7 +31,7 @@ class PhishSafeTrackerManager {
   final DeviceInfoLogger _deviceLogger = DeviceInfoLogger();
   final ExportManager _exportManager = ExportManager();
   final TrustScoreEngine _trustEngine = TrustScoreEngine();
-  final InputTracker _inputTracker = InputTracker(); // ✅ New fields tracked
+  final InputTracker _inputTracker = InputTracker();
 
   final Map<String, int> _screenDurations = {};
   Timer? _screenRecordingTimer;
@@ -49,7 +49,8 @@ class PhishSafeTrackerManager {
     _swipeTracker.reset();
     _navLogger.reset();
     _sessionTracker.startSession();
-    _inputTracker.reset(); // ✅ Reset all input fields
+    _inputTracker.reset();
+    _inputTracker.markLogin(); // ✅ Mark login time
     _screenRecordingDetected = false;
     _screenDurations.clear();
 
@@ -166,11 +167,14 @@ class PhishSafeTrackerManager {
       'screen_durations': _screenDurations,
       'screen_recording_detected': _screenRecordingDetected,
 
-      // ✅ Tracked input summary
+      // ✅ Tracked input summary + timing
       'session_input': {
         'transaction_amount': _inputTracker.getTransactionAmount(),
         'fd_broken': _inputTracker.isFDBroken,
         'loan_taken': _inputTracker.isLoanTaken,
+        'time_from_login_to_fd': _inputTracker.timeFromLoginToFD?.inSeconds,
+        'time_from_login_to_loan': _inputTracker.timeFromLoginToLoan?.inSeconds,
+        'time_between_fd_and_loan': _inputTracker.timeBetweenFDAndLoan?.inSeconds,
       },
     };
 

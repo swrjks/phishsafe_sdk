@@ -1,29 +1,53 @@
 class InputTracker {
   String? lastTransactionAmount;
-  bool fdBroken = false;
-  bool loanTaken = false; // ✅ Track loan application
+  DateTime? transactionTime;
+  DateTime? fdBrokenTime;
+  DateTime? loanTakenTime;
+  DateTime? loginTime;
 
   void setTransactionAmount(String amount) {
     lastTransactionAmount = amount;
+    transactionTime = DateTime.now();
   }
 
   String? getTransactionAmount() => lastTransactionAmount;
 
-  void markFDBroken() {
-    fdBroken = true;
+  void markLogin() {
+    loginTime = DateTime.now();
   }
 
-  bool get isFDBroken => fdBroken;
+  void markFDBroken() {
+    fdBrokenTime = DateTime.now();
+  }
+
+  bool get isFDBroken => fdBrokenTime != null;
 
   void markLoanTaken() {
-    loanTaken = true;
+    loanTakenTime = DateTime.now();
   }
 
-  bool get isLoanTaken => loanTaken;
+  bool get isLoanTaken => loanTakenTime != null;
+
+  Duration? get timeFromLoginToFD =>
+      loginTime != null && fdBrokenTime != null
+          ? fdBrokenTime!.difference(loginTime!)
+          : null;
+
+  Duration? get timeFromLoginToLoan =>
+      loginTime != null && loanTakenTime != null
+          ? loanTakenTime!.difference(loginTime!)
+          : null;
+
+  Duration? get timeBetweenFDAndLoan =>
+      fdBrokenTime != null && loanTakenTime != null
+          ? loanTakenTime!.difference(fdBrokenTime!)
+          : null;
 
   void reset() {
     lastTransactionAmount = null;
-    fdBroken = false;
-    loanTaken = false;
+    transactionTime = null;
+    fdBrokenTime = null;
+    loanTakenTime = null;
+    loginTime = null;
   }
 }
