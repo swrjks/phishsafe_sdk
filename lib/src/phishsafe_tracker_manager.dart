@@ -14,7 +14,6 @@ import 'analytics/session_tracker.dart';
 import 'device/device_info_logger.dart';
 import '../storage/export_manager.dart';
 import 'detectors/screen_recording_detector.dart';
-import 'engine/trust_score_engine.dart';
 
 class PhishSafeTrackerManager {
   // ✅ Singleton pattern
@@ -30,7 +29,6 @@ class PhishSafeTrackerManager {
   final SessionTracker _sessionTracker = SessionTracker();
   final DeviceInfoLogger _deviceLogger = DeviceInfoLogger();
   final ExportManager _exportManager = ExportManager();
-  final TrustScoreEngine _trustEngine = TrustScoreEngine();
   final InputTracker _inputTracker = InputTracker();
 
   final Map<String, int> _screenDurations = {};
@@ -177,16 +175,6 @@ class PhishSafeTrackerManager {
         'time_between_fd_and_loan': _inputTracker.timeBetweenFDAndLoan?.inSeconds,
       },
     };
-
-    try {
-      final trustScore = _trustEngine.calculateScore(sessionData);
-      sessionData['trust_score'] = trustScore;
-      print("🔐 Trust score calculated: $trustScore");
-    } catch (e, stack) {
-      print("⚠️ Trust score calculation failed: $e");
-      print(stack);
-      sessionData['trust_score'] = -1;
-    }
 
     // 📝 Export to JSON
     await _exportManager.exportToJson(sessionData, 'session_log');

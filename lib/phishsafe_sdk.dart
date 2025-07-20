@@ -3,10 +3,6 @@ library phishsafe_sdk;
 
 export 'src/phishsafe_tracker_manager.dart';
 
-//engine
-export 'src/engine/user_profile_manager.dart';
-export 'src/engine/trust_score_engine.dart';
-
 // Integrations
 export 'src/integrations/gesture_wrapper.dart';
 
